@@ -1,0 +1,378 @@
+ECB
+
+# Soal 3 — AES ECB Byte-at-a-Time Attack (Medium-Hard)
+
+Ini adalah salah satu challenge AES paling terkenal dalam CTF dan berasal dari seri Cryptopals.
+
+---
+
+# Konsep
+
+Developer membuat oracle:
+
+```python
+encrypt(input + flag)
+```
+
+Peserta bisa mengirim plaintext sesuka hati.
+
+Tetapi tidak mengetahui:
+
+* key AES
+* isi flag
+
+Karena menggunakan ECB, kita bisa membocorkan flag satu byte demi satu byte.
+
+---
+
+# Generator Soal
+
+```python
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+import os
+
+key = os.urandom(16)
+
+flag = b"FLAG{ECB_ORACLE_ATTACK}"
+
+def encrypt(user_input):
+
+    pt = user_input + flag
+
+    cipher = AES.new(key,AES.MODE_ECB)
+
+    return cipher.encrypt(
+        pad(pt,16)
+    ).hex()
+
+while True:
+    inp = input("> ").encode()
+    print(encrypt(inp))
+```
+
+---
+
+# Yang Diberikan
+
+Peserta hanya memiliki akses:
+
+```text
+> AAAA
+ciphertext
+
+> BBBB
+ciphertext
+
+> HELLO
+ciphertext
+```
+
+Tidak ada source code.
+
+Hanya oracle.
+
+---
+
+# Langkah 1 — Identifikasi ECB
+
+Kirim:
+
+```python
+b"A"*64
+```
+
+Jika muncul blok ciphertext identik:
+
+```text
+BLOCK1
+BLOCK2
+BLOCK1
+BLOCK2
+```
+
+maka kemungkinan besar ECB.
+
+---
+
+# Langkah 2 — Cari Ukuran Blok
+
+Kirim:
+
+```python
+A
+AA
+AAA
+AAAA
+```
+
+hingga ciphertext bertambah panjang.
+
+Misalnya:
+
+```text
+16 byte
+32 byte
+48 byte
+```
+
+Berarti:
+
+```text
+block size = 16
+```
+
+---
+
+# Langkah 3 — Bocorkan Byte Pertama
+
+Misalkan block size:
+
+```text
+16
+```
+
+Kirim:
+
+```python
+"A"*15
+```
+
+Maka plaintext internal:
+
+```text
+AAAAAAAAAAAAAAA?
+```
+
+di mana:
+
+```text
+? = byte pertama flag
+```
+
+---
+
+# Buat Dictionary
+
+Coba semua kemungkinan:
+
+```python
+AAAAAAAAAAAAAAA + chr(i)
+```
+
+untuk:
+
+```python
+i = 0..255
+```
+
+Enkripsi semuanya.
+
+Simpan:
+
+```python
+ciphertext_block → byte
+```
+
+---
+
+# Bandingkan
+
+Oracle:
+
+```python
+encrypt(b"A"*15)
+```
+
+akan menghasilkan blok yang sama dengan salah satu dictionary.
+
+Jika cocok dengan:
+
+```python
+AAAAAAAAAAAAAAAF
+```
+
+maka:
+
+```text
+flag[0] = 'F'
+```
+
+---
+
+# Langkah 4 — Bocorkan Byte Kedua
+
+Sekarang kita tahu:
+
+```text
+F
+```
+
+Kirim:
+
+```python
+"A"*14
+```
+
+plaintext menjadi:
+
+```text
+AAAAAAAAAAAAAAFX
+```
+
+Bruteforce:
+
+```python
+AAAAAAAAAAAAAAF + candidate
+```
+
+hingga blok cocok.
+
+Dapat:
+
+```text
+L
+```
+
+---
+
+# Hasil
+
+Sedikit demi sedikit:
+
+```text
+F
+FL
+FLA
+FLAG
+FLAG{
+...
+```
+
+hingga seluruh flag diperoleh.
+
+---
+
+# Solver Sederhana
+
+```python
+from pwn import *
+
+BLOCK = 16
+
+known = b""
+
+for pos in range(100):
+
+    pad = b"A"*(BLOCK-1-len(known)%BLOCK)
+
+    target = oracle(pad)
+
+    blocknum = len(known)//BLOCK
+
+    targetblock = target[
+        blocknum*BLOCK:
+        (blocknum+1)*BLOCK
+    ]
+
+    table = {}
+
+    for i in range(256):
+
+        guess = (
+            pad +
+            known +
+            bytes([i])
+        )
+
+        ct = oracle(guess)
+
+        table[
+            ct[:BLOCK]
+        ] = bytes([i])
+
+    if targetblock in table:
+        known += table[targetblock]
+    else:
+        break
+
+print(known)
+```
+
+---
+
+# Mengapa ECB Rentan?
+
+ECB:
+
+```text
+Plaintext sama
+↓
+Ciphertext sama
+```
+
+Tidak ada:
+
+* IV
+* nonce
+* randomisasi
+
+Sehingga pola plaintext bocor.
+
+---
+
+# Versi Hard
+
+Developer menambahkan prefix acak:
+
+```python
+pt =
+random_prefix +
+user_input +
+flag
+```
+
+Contoh:
+
+```python
+prefix = os.urandom(random.randint(5,30))
+```
+
+---
+
+Sekarang peserta harus:
+
+1. Menentukan panjang prefix.
+2. Menentukan alignment blok.
+3. Baru melakukan byte-at-a-time attack.
+
+Challenge ini sering disebut:
+
+```text
+ECB Oracle with Random Prefix
+```
+
+dan jauh lebih sulit daripada versi standar.
+
+---
+
+# Flag
+
+```text
+FLAG{ECB_BYTE_AT_A_TIME_ATTACK}
+```
+
+---
+
+### Skill yang Dipelajari
+
+* ECB detection
+* Block size discovery
+* Chosen plaintext attack
+* Oracle attack
+* Dictionary attack
+* Block alignment
+
+---
+
+Soal berikutnya yang biasanya naik ke tingkat **Hard** adalah **ECDSA Nonce Reuse Attack**, karena di sana peserta harus memulihkan private key dari dua signature yang menggunakan nonce yang sama.

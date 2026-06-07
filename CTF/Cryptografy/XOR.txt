@@ -1,0 +1,15 @@
+Diberikan 
+
+Ciphertext : "0d07040e"
+key = K
+
+kita coba jalankan script nya :
+</>Python
+-----------------------------------------------------------------------	
+cipher = bytes.fromhex("0d07040e")
+
+for b in cipher;
+    print(chr(b ^ ord('K')), end="")
+
+Output: FLOE
+-----------------------------------------------------------------------

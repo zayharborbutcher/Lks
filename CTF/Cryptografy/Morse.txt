@@ -1,0 +1,151 @@
+Crypto encoding morse
+
+
+1.Encode Text -> Morse
+-----------------------------------------------------------------------
+</>Python
+morse_dict = {
+    'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..',
+    'E': '.', 'F': '..-.', 'G': '--.', 'H': '....',
+    'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+    'M': '--', 'N': '-.', 'O': '---', 'P': '.--.',
+    'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-',
+    'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+    'Y': '-.--', 'Z': '--..',
+    '0': '-----', '1': '.----', '2': '..---',
+    '3': '...--', '4': '....-', '5': '.....',
+    '6': '-....', '7': '--...', '8': '---..',
+    '9': '----.'
+}
+
+text = input("Masukkan teks: ").upper()
+
+hasil = ""
+
+for huruf in text:
+    if huruf == " ":
+        hasil += "/ "
+    elif huruf in morse_dict:
+        hasil += morse_dict[huruf] + " "
+
+print("\nMorse:")
+print(hasil)
+
+Contoh
+
+input:
+HELLO
+
+output:
+.... . .-.. .-.. ---
+
+
+
+2.Decode Morse -> Text
+-----------------------------------------------------------------------
+</>Python
+morse_dict = {
+    '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D',
+    '.': 'E', '..-.': 'F', '--.': 'G', '....': 'H',
+    '..': 'I', '.---': 'J', '-.-': 'K', '.-..': 'L',
+    '--': 'M', '-.': 'N', '---': 'O', '.--.': 'P',
+    '--.-': 'Q', '.-.': 'R', '...': 'S', '-': 'T',
+    '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X',
+    '-.--': 'Y', '--..': 'Z'
+}
+
+morse = input("Masukkan Morse: ")
+
+hasil = ""
+
+for kode in morse.split():
+    if kode in morse_dict:
+        hasil += morse_dict[kode]
+
+print("\nPlaintext:")
+print(hasil)
+
+Contoh
+
+Input:
+.... . .-.. .-.. ---
+
+output:
+HELLo
+
+-----------------------------------------------------------------------
+
+
+3.Challange CTF Sederhana
+
+Buat file challange.py
+
+</>Python
+flag = "FLAG{MORSE_CODE_MUDAH}"
+
+morse_dict = {
+    'A': '.-', 'B': '-...', 'C': '-.-.',
+    'D': '-..', 'E': '.', 'F': '..-.',
+    'G': '--.', 'H': '....', 'I': '..',
+    'J': '.---', 'K': '-.-', 'L': '.-..',
+    'M': '--', 'N': '-.', 'O': '---',
+    'P': '.--.', 'Q': '--.-', 'R': '.-.',
+    'S': '...', 'T': '-', 'U': '..-',
+    'V': '...-', 'W': '.--', 'X': '-..-',
+    'Y': '-.--', 'Z': '--..'
+}
+
+cipher = ""
+
+for c in flag.upper():
+    if c in morse_dict:
+        cipher += morse_dict[c] + " "
+
+print(cipher)
+
+
+
+kita decode dlu 
+
+jadi 
+morse_dict = {
+    '.-': 'A',
+    '-...': 'B',
+    '-.-.': 'C',
+    '-..': 'D',
+    '.': 'E',
+    '..-.': 'F',
+    '--.': 'G',
+    '....': 'H',
+    '..': 'I',
+    '.---': 'J',
+    '-.-': 'K',
+    '.-..': 'L',
+    '--': 'M',
+    '-.': 'N',
+    '---': 'O',
+    '.--.': 'P',
+    '--.-': 'Q',
+    '.-.': 'R',
+    '...': 'S',
+    '-': 'T',
+    '..-': 'U',
+    '...-': 'V',
+    '.--': 'W',
+    '-..-': 'X',
+    '-.--': 'Y',
+    '--..': 'Z'
+}
+
+morse = input("Masukan Morse: ")
+
+hasil = ""
+
+decode_dict = {v: k for k, v in morse_dict.items()}
+
+for kode in morse.split():
+    if kode in morse_dict:
+        hasil += morse_dict[kode]
+        
+print("\nPlaintext:")
+print(hasil)

@@ -1,0 +1,13 @@
+Cara Mencegah SSTI 
+• Cara Salah (Rentan) 
+render_template_string("Hello " + name) 
+• Cara Aman 
+Gunakan template file + parameter binding: 
+return render_template("index.html", name=name) 
+Di HTML: 
+Hello {{ name }} 
+What is this? 
+ 
+Karena: 
+• Jinja2 hanya menampilkan variabel 
+• Tidak mengeksekusi kode dari user 

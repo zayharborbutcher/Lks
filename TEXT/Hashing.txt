@@ -1,0 +1,294 @@
+lur resolve yang paling umum untuk challenge Length Extension Attack di CTF
+
+# Diberikan
+
+Misalnya challenge memberikan:
+
+```text
+msg =
+user=asep&role=user
+
+hash =
+6f44a8d5b2d7f7d5cbb1e7f0f5c9...
+```
+
+Developer membuat:
+
+```python
+hash = sha256(secret + msg)
+```
+
+Target:
+
+```text
+user=asep&role=user&admin=true
+```
+
+---
+
+# Langkah 1 — Identifikasi Kerentanan
+
+Jika menemukan pola:
+
+```python
+sha256(secret + message)
+```
+
+atau
+
+```python
+md5(secret + message)
+```
+
+langsung curiga Length Extension.
+
+Karena SHA256 adalah Merkle-Damgård hash.
+
+---
+
+# Langkah 2 — Cari Panjang Secret
+
+Biasanya challenge:
+
+```python
+secret = os.urandom(16)
+```
+
+Maka tebakan pertama:
+
+```python
+secret_len = 16
+```
+
+Kalau tidak diketahui:
+
+```python
+for i in range(1,65):
+```
+
+bruteforce.
+
+---
+
+# Langkah 3 — Gunakan HashPump
+
+Install:
+
+```bash
+pip install hashpumpy
+```
+
+atau
+
+```bash
+git clone https://github.com/bwall/HashPump
+```
+
+---
+
+# Langkah 4 — Generate Payload Baru
+
+Misalnya:
+
+```python
+from hashpumpy import hashpump
+
+old_hash = "6f44a8d5..."
+old_data = "user=asep&role=user"
+
+new_hash, new_msg = hashpump(
+    old_hash,
+    old_data,
+    "&admin=true",
+    16
+)
+
+print(new_hash)
+print(new_msg)
+```
+
+---
+
+# Hasil
+
+Misalnya:
+
+```python
+new_msg =
+b'user=asep&role=user\x80\x00\x00\x00...&admin=true'
+```
+
+dan:
+
+```python
+new_hash =
+8d2f4ac9....
+```
+
+---
+
+# Langkah 5 — Kirim ke Server
+
+Kirim:
+
+```text
+message = new_msg
+token = new_hash
+```
+
+---
+
+# Mengapa Berhasil?
+
+Server menghitung:
+
+```python
+sha256(secret + received_message)
+```
+
+yang menjadi:
+
+```text
+secret
++
+user=asep&role=user
++
+padding
++
+&admin=true
+```
+
+Persis sama dengan yang dihitung HashPump.
+
+Hash cocok.
+
+Server percaya.
+
+---
+
+# Simulasi Lokal
+
+Buat file:
+
+```python
+from hashlib import sha256
+
+secret = b"AAAAAAAAAAAAAAAA"
+
+msg = b"user=asep&role=user"
+
+token = sha256(secret+msg).hexdigest()
+
+print(token)
+```
+
+Output:
+
+```text
+e4d3....
+```
+
+Lalu jalankan HashPump.
+
+Setelah itu verifikasi:
+
+```python
+check = sha256(
+    secret + forged_message
+).hexdigest()
+
+print(check == forged_hash)
+```
+
+Output:
+
+```text
+True
+```
+
+Berarti attack berhasil.
+
+---
+
+# Cara Mengetahui Challenge Rentan
+
+Biasanya ada petunjuk seperti:
+
+```python
+token = sha256(secret + data)
+```
+
+atau
+
+```python
+token = md5(key + message)
+```
+
+atau endpoint:
+
+```text
+/download?file=notes.txt&token=...
+```
+
+dan token berubah sesuai parameter.
+
+---
+
+# Contoh Soal CTF Nyata
+
+Diberikan:
+
+```text
+username=guest
+
+token=
+9f81f8b7f55e...
+```
+
+Target:
+
+```text
+username=guest&admin=1
+```
+
+Solver:
+
+```python
+from hashpumpy import hashpump
+
+h = "9f81f8b7f55e..."
+msg = "username=guest"
+
+new_h,new_msg = hashpump(
+    h,
+    msg,
+    "&admin=1",
+    16
+)
+
+print(new_h)
+print(new_msg)
+```
+
+Kirim hasilnya.
+
+Flag keluar.
+
+---
+
+### Saat kompetisi
+
+Checklist cepat:
+
+1. Lihat apakah ada:
+
+   ```python
+   sha256(secret + msg)
+   ```
+2. Jika ya → coba Length Extension.
+3. Tebak panjang secret (8–32 byte biasanya).
+4. Gunakan HashPump/hashpumpy.
+5. Kirim hash baru dan pesan baru.
+6. Jika gagal, ulangi dengan panjang secret berbeda.
+
+Ini adalah alur resolve yang paling umum untuk challenge Length Extension Attack di CTF.

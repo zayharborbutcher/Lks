@@ -1,0 +1,40 @@
+#XOR base64
+import base64
+print(base64.b64decode("aGVsbG9fd29ybGQ=").decode())
+
+#Crypto Vigenere Cipher
+def vigenere_decrypt(chipertext, key):
+    result = ""
+    key = key.lower()
+    key_index = 0
+    for char in chipertext:
+        if char.isalpha():
+            c = ord(char) - ord('a')
+            k = ord(key(key_index % len(key))) - ord('a')
+            p = (c - k) % 26
+            result = chr(p + ord('a'))
+            key_index += 1
+        else:
+            result += char
+        return result
+cipher = ""
+key = ""
+print(vigenere_decrypt(cipher,key))
+
+def caesar(text, shift):
+    result = ""
+
+    for c in text:
+        if c.isalpha():
+            base = ord('A') if c.isupper() else ord('a')
+            result += chr((ord(c) - base + shift) % 26 + base)
+        else:
+            result += c
+
+    return result
+
+print(caesar("iodj{fubsdu_h{hpsv} ", -3))
+
+#Membalikan kata
+text = "=fQGbsVGS19VZsF2Y"
+print(text[::-1])

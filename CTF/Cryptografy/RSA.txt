@@ -1,0 +1,214 @@
+RSA 
+
+diketahui:
+-----------------------------------------------------------------------
+p = 17
+q = 19
+
+n = 17 * 19 / n = p * q
+n = 323
+
+phi = (p - 1) * (q - 1)
+
+print("n =", n)
+print("phi =", phi)
+-----------------------------------------------------------------------
+
+diberikan soal.
+Diketahui:
+p = 17 
+q = 19
+e = 5
+c = 225
+
+Tugas: 
+1.Cari n
+2.cari φ(n)
+3.cari d
+4.Decrypt ciphertext
+
+Langkah 1: Cari n
+Rumus: 
+- n = p * q	
+Hitung:
+n = 17 * 19
+n = 323
+
+Langkah 2: Cari p(n)
+Rumus:
+p(n) = (p-1)(q-1)
+
+Hitung:
+(n) = 16 * 18
+(n) = 288
+
+Langkah 3: Cari d
+Cari angka d sehingga:
+d.e = 1 (modp(n))
+
+Karena:
+e = 5
+p(n) = 288
+
+Maka:
+5 * d = 1 (mod 288)
+
+Cara cepat dengan python
+Buat file:
+</>Python
+
+e = 5
+phi = 288
+
+for d in range(1, phi):
+    if (d * e) % phi == 1:
+        print(d)
+        break
+
+Output:
+173
+
+jadi:
+d = 173
+
+Langkah 4: Decrpt
+Rumus RSA:
+
+m=cd mod n
+Masukan:
+
+m = 225^173 mod 323
+
+Python:
+</>python 
+
+c = 225
+d = 173
+n = 323
+
+m = pow(c, d, n)
+
+print(m)
+
+Output:
+73
+
+Konversi ke huruf 
+ASCII:
+</>python
+print(chr(72))
+
+Output;
+H
+
+Hasil Akhir
+Plaintext = H
+
+-----------------------------------------------------------------------
+Versi Kebalikannya
+
+Soalnya:
+
+n = 391
+
+cari:
+p = ?
+q = ?
+
+Apa yang harus dilakukan?
+Dalam RSA, kita tahu:
+
+n = p * q
+Jad tugas kita adalah mencari dua bilangan prima yang jika dikalikan hasilnya 391.
+Langkah 1: Coba faktor prima kecil
+
+Mulai dari:
+
+391 ÷ 2 = tidak habis
+391 ÷ 3 = tidak habis
+391 ÷ 5 = tidak habis
+391 ÷ 7 = tidak habis
+391 ÷ 11 = tidak habis
+391 ÷ 13 = tidak habis
+Langkah 2: Coba 17
+
+Hitung:
+
+391 ÷ 17
+
+Kalau pakai kalkulator atau Python:
+
+print(391 // 17)
+
+Hasil:
+
+23
+
+Cek:
+
+17 × 23 = 391
+
+Jawaban
+p = 17
+q = 23
+
+atau sebaliknya:
+
+p = 23
+q = 17
+
+RSA tidak peduli urutannya.
+
+Verifikasi dengan Python
+n = 391
+
+for i in range(2, n):
+    if n % i == 0:
+        print("p =", i)
+        print("q =", n // i)
+        break
+
+Output:
+
+p = 17
+q = 23
+Setelah p dan q ketemu
+
+Biasanya soal RSA berikutnya adalah:
+
+n = 391
+e = 3
+c = ...
+
+Maka langkah berikut:
+
+Cari p dan q ✅
+
+Cari φ(n)
+
+φ(n) = (17−1)(23−1)
+      = 16×22
+      = 352
+
+Cari d
+Decrypt ciphertext
+Tips LKS
+
+Kalau ketemu RSA kecil seperti:
+
+143
+221
+323
+391
+437
+
+biasanya langsung coba:
+
+11
+13
+17
+19
+23
+29
+31
+

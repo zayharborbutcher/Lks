@@ -1,0 +1,171 @@
+CTR
+# Soal 1 — AES CTR Nonce Reuse (Medium)
+
+## Deskripsi
+
+Admin mengenkripsi dua pesan menggunakan AES-CTR.
+
+Developer lupa bahwa nonce CTR harus unik untuk setiap enkripsi.
+
+File yang diberikan:
+
+```python
+from Crypto.Cipher import AES
+import os
+
+flag = b"FLAG{CTR_NONCE_REUSE_ATTACK}"
+
+key = os.urandom(16)
+nonce = b"12345678"
+
+known = b"Attack at dawn"
+
+cipher = AES.new(key, AES.MODE_CTR, nonce=nonce)
+c1 = cipher.encrypt(known)
+
+cipher = AES.new(key, AES.MODE_CTR, nonce=nonce)
+c2 = cipher.encrypt(flag)
+
+print("c1 =", c1.hex())
+print("c2 =", c2.hex())
+```
+
+---
+
+## Output yang Diberikan ke Peserta
+
+Misalnya:
+
+```text
+known = Attack at dawn
+
+c1 = 2c011f0a181b0f4d021a47190e02
+c2 = 2b1f0a0c0e76183f0f151e061d00046c1816090f0218760e170a02020f
+```
+
+---
+
+# Tujuan
+
+Cari isi plaintext kedua (`flag`).
+
+---
+
+# Petunjuk
+
+AES-CTR bekerja seperti:
+
+[
+Ciphertext = Plaintext \oplus Keystream
+]
+
+Jika nonce dipakai ulang:
+
+[
+C_1 = P_1 \oplus KS
+]
+
+[
+C_2 = P_2 \oplus KS
+]
+
+---
+
+# Langkah Penyelesaian
+
+Karena diketahui:
+
+```text
+P1 = "Attack at dawn"
+```
+
+maka:
+
+```text
+KS = C1 XOR P1
+```
+
+Setelah mendapatkan keystream:
+
+```text
+P2 = C2 XOR KS
+```
+
+---
+
+# Solver
+
+```python
+from pwn import xor
+
+known = b"Attack at dawn"
+
+c1 = bytes.fromhex(
+"2c011f0a181b0f4d021a47190e02"
+)
+
+c2 = bytes.fromhex(
+"2b1f0a0c0e76183f0f151e061d00046c1816090f0218760e170a02020f"
+)
+
+ks = xor(c1, known)
+
+flag = xor(c2, ks)
+
+print(flag)
+```
+
+---
+
+# Yang Harus Dipahami Peserta
+
+Bukan AES yang rusak.
+
+Yang rusak adalah:
+
+```text
+nonce digunakan ulang
+```
+
+Akibatnya:
+
+```text
+dua ciphertext memakai keystream yang sama
+```
+
+dan seluruh keamanan CTR runtuh.
+
+---
+
+# Variasi yang Lebih Sulit
+
+Jangan berikan plaintext lengkap.
+
+Berikan:
+
+```text
+c1
+c2
+c3
+c4
+```
+
+Semuanya memakai nonce yang sama.
+
+Peserta harus melakukan:
+
+```text
+crib dragging
+```
+
+untuk menebak plaintext satu per satu.
+
+Tingkat kesulitan naik dari:
+
+```text
+Medium → Medium-Hard
+```
+
+---
+
+Soal berikutnya yang paling sering keluar setelah ini adalah **CBC Bit Flipping Attack (Medium)**, yang termasuk kategori AES juga.

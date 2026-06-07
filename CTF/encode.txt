@@ -1,0 +1,22 @@
+BASE 64:
+import base64
+print(base64.b64.decode("dsefhiedfhndjfghrfh").decode().hexdigest()
+
+HEX:
+hex_data = "464c41477b6865785f6465636f64657d"
+print(bytes.fromhex(hex_data).decode())
+
+DECODE BINARY PYTHON:
+
+binary = "01000110 01001100 01000001 01000111"
+text = ''.join(chr(int(b,2)) for b in binary.split())
+print(text)
+
+URL ENCODING:
+import urllib.parse
+data = "FLAG%7Bweb_encode%7D"
+print(urllib.parse.unquote(data))
+
+ROT13:
+import codecs
+print(codecs.decode("SYNT{ebg13}", "rot_13"))

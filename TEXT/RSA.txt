@@ -1,0 +1,67 @@
+M = Message(plaintext) > halo
+ct = ciphertext
+e = Public Exponent
+n = modulus > n dibuat dari n = p * q
+
+
+Bilangan komposit adalah bilangan bulat positif yang memiliki lebih dari dua faktor.
+
+Artinya:
+
+bisa dibagi 1
+bisa dibagi dirinya sendiri
+dan masih bisa dibagi angka lain lagi
+
+Contoh:
+
+4 → faktor: 1, 2, 4
+6 → faktor: 1, 2, 3, 6
+12 → faktor: 1, 2, 3, 4, 6, 12
+
+Jadi 4, 6, 12 adalah bilangan komposit.
+
+Fungsi modulus (mod) adalah operasi matematika untuk mencari sisa hasil pembagian.
+
+Ditulis:
+
+amodb
+
+dibaca:
+“a mod b”.
+
+Contoh:
+
+17÷5=3
+
+sisanya 2, maka:
+
+17mod5=2
+
+Contoh lain:
+
+Operasi	Hasil
+10 mod 3	1
+20 mod 4	0
+13 mod 5	3
+25 mod 7	4
+Fungsi modulus dalam RSA
+
+RSA sangat bergantung pada modulus karena hasil perhitungan selalu “diputar” dalam batas tertentu.
+
+Misalnya:
+
+27mod10=7
+
+karena 27 dibagi 10 sisanya 7.
+
+Dalam RSA biasanya dipakai:
+
+c = m(e) mod n
+artinya:
+
+m = pesan
+e = kunci publik
+n = modulus
+c = hasil enkripsi
+
+Jadi modulus menjaga angka tetap berada dalam rentang tertentu dan menjadi dasar keamanan RSA.

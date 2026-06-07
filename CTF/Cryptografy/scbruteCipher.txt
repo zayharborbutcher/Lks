@@ -1,0 +1,84 @@
+Flag:
+FLAG{CAESAR_CIPHER}
+-----------------------------------------------------------------------
+Script python
+cipher = "IODJ{FDHVDU_FLSKHU}"
+
+hasil = ""
+
+for c in cipher:
+    if c.isalpha():
+        hasil += chr((ord(c)-ord('A')-3)%26 + ord('A'))
+    else:
+        hasil += c
+
+print(hasil)
+
+Output:
+FLAG{CAESAR_CIPHER}
+-----------------------------------------------------------------------
+
+Script brute force
+
+hanya diberikan kode ini saja : LQGRQHVLD
+kita buat brute saja..
+
+cipher = "LQGRQHVLD"
+
+for shift in range(26):
+    hasil = ""
+
+    for c i cipher:
+        hasil += chr((ord(c)-ord('A')-shift)%26 + ord('A'))
+
+    print(f"Shift {shift}: {hasil}")
+
+Output:
+Shift 0: LQGRQHVLD
+Shift 1: KPFQPGUKC
+Shift 2: JOEPOFTJB
+Shift 3: INDONESIA
+Shift 4: HMCNMDRHZ
+Shift 5: GLBMLCQGY
+Shift 6: FKALKBPFX
+Shift 7: EJZKJAOEW
+Shift 8: DIYJIZNDV
+Shift 9: CHXIHYMCU
+Shift 10: BGWHGXLBT
+Shift 11: AFVGFWKAS
+Shift 12: ZEUFEVJZR
+Shift 13: YDTEDUIYQ
+Shift 14: XCSDCTHXP
+Shift 15: WBRCBSGWO
+Shift 16: VAQBARFVN
+Shift 17: UZPAZQEUM
+Shift 18: TYOZYPDTL
+Shift 19: SXNYXOCSK
+Shift 20: RWMXWNBRJ
+Shift 21: QVLWVMAQI
+Shift 22: PUKVULZPH
+Shift 23: OTJUTKYOG
+Shift 24: NSITSJXNF
+Shift 25: MRHSRIWME
+
+Terlihat shift 3 = INDONESIA
+
+-----------------------------------------------------------------------
+Script brute froce v2
+
+def caesar (text, shift):
+    result = ""
+    
+    for c in text:
+        if c.isupper():
+            result += chr((ord(c)-65-shift)%26+65)
+        else:
+            result += c
+            
+    return result
+            
+cipher = "IODJ{FDHVDU_LV_IXQ}"
+
+for i in range(26):
+    print(i, caesar(cipher, i))
+-----------------------------------------------------------------------

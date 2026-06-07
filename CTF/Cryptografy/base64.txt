@@ -1,0 +1,11 @@
+diberikan kode : RkxBR3tiYXNlNjRfbGtzX3Byb3ZpbnNpfQ==
+
+langsung kita decode:
+buat file nya:
+base.py
+
+import base64
+print(base64.b64decode("RkxBR3tiYXNlNjRfbGtzX3Byb3ZpbnNpfQ=="))	
+
+Output: 
+b'FLAG{base64_lks_provinsi}'

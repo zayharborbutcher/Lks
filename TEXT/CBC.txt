@@ -1,0 +1,247 @@
+CBC
+
+# Soal 2 — AES CBC Bit Flipping Attack (Medium)
+
+Ini adalah salah satu soal AES yang paling sering muncul di CTF Jeopardy.
+
+---
+
+# Konsep
+
+Pada mode CBC:
+
+[
+P_i = D(C_i) \oplus C_{i-1}
+]
+
+Artinya jika kita mengubah bit pada ciphertext blok sebelumnya, plaintext blok berikutnya akan ikut berubah secara terkontrol.
+
+Developer sering berpikir:
+
+```text
+Ciphertext terenkripsi = aman
+```
+
+Padahal penyerang bisa memodifikasi ciphertext tanpa mengetahui key.
+
+---
+
+# Generator Soal
+
+```python
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+import os
+
+key = os.urandom(16)
+iv = os.urandom(16)
+
+def encrypt():
+    pt = b"username=guest;admin=0"
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    return iv + cipher.encrypt(pad(pt,16))
+
+def check(cookie):
+
+    iv = cookie[:16]
+    ct = cookie[16:]
+
+    cipher = AES.new(key,AES.MODE_CBC,iv)
+    pt = cipher.decrypt(ct)
+
+    if b"admin=1" in pt:
+        print("FLAG{CBC_BIT_FLIP}")
+    else:
+        print("Access denied")
+```
+
+---
+
+# Yang Diberikan ke Peserta
+
+Ketika meminta cookie:
+
+```python
+cookie = encrypt()
+```
+
+Peserta memperoleh:
+
+```text
+cookie.hex()
+```
+
+---
+
+# Tujuan
+
+Ubah:
+
+```text
+username=guest;admin=0
+```
+
+menjadi:
+
+```text
+username=guest;admin=1
+```
+
+tanpa mengetahui key AES.
+
+---
+
+# Analisis
+
+ASCII:
+
+```text
+0 = 0x30
+1 = 0x31
+```
+
+Perbedaannya:
+
+```text
+0x30 XOR 0x31 = 0x01
+```
+
+Jadi cukup membalik 1 bit.
+
+---
+
+# Ilustrasi
+
+Misalkan karakter:
+
+```text
+admin=0
+```
+
+berada pada blok kedua.
+
+Kita ubah byte yang sesuai pada ciphertext blok pertama:
+
+```python
+modified[pos] ^= 0x01
+```
+
+Maka setelah dekripsi:
+
+```text
+admin=0
+```
+
+berubah menjadi:
+
+```text
+admin=1
+```
+
+---
+
+# Solver
+
+```python
+cookie = bytearray(bytes.fromhex(cookie_hex))
+
+target_position = 15
+
+cookie[target_position] ^= 0x01
+
+print(cookie.hex())
+```
+
+Kirim cookie hasil modifikasi.
+
+---
+
+# Mengapa Berhasil?
+
+CBC melakukan:
+
+[
+P_2 = D(C_2)\oplus C_1
+]
+
+Jika kita mengubah:
+
+[
+C_1'
+]
+
+maka:
+
+[
+P_2'
+]
+
+juga berubah.
+
+Kita tidak perlu mengetahui:
+
+* key AES
+* plaintext lengkap
+* hasil dekripsi
+
+Cukup mengetahui posisi byte target.
+
+---
+
+# Versi Medium-Hard
+
+Developer melakukan sanitasi:
+
+```python
+userdata = userdata.replace(b";",b"")
+userdata = userdata.replace(b"=",b"")
+```
+
+Kemudian plaintext:
+
+```python
+b"comment1=hello;"
++ userdata +
+b";admin=0"
+```
+
+Target:
+
+```text
+;admin=1;
+```
+
+Karakter `;` dan `=` tidak bisa dimasukkan langsung.
+
+Peserta harus:
+
+1. Memasukkan karakter lain yang mirip.
+2. Melakukan bit flipping.
+3. Mengubahnya menjadi:
+
+```text
+;admin=1;
+```
+
+Ini adalah variasi klasik yang pernah muncul pada banyak challenge ala Cryptopals.
+
+---
+
+# Flag
+
+```text
+FLAG{CBC_BIT_FLIPPING_ATTACK}
+```
+
+---
+
+## Yang Harus Dipelajari
+
+* Cara kerja CBC.
+* Hubungan antara plaintext dan ciphertext antar blok.
+* XOR manipulation.
+* Block alignment.
+
+---
+
+Soal berikutnya yang biasanya muncul setelah ECB dan CBC adalah **AES-ECB Byte-at-a-Time Attack (Medium-Hard)**, karena peserta harus membangun oracle attack untuk mendapatkan flag byte demi byte.

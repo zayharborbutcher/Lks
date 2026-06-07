@@ -1,0 +1,89 @@
+Studi Kasus Cryptography: Hex Encoding
+Deskripsi Kasus
+
+Seorang analis forensik menemukan string mencurigakan di dalam log server:
+
+464c41477b4845585f49535f454153597d
+
+Tim menduga data tersebut merupakan hasil encoding, bukan enkripsi.
+
+Tugas:
+
+Identifikasi jenis encoding.
+Decode data tersebut.
+Temukan flag yang tersembunyi.
+
+Langkah 1: Identifikasi Pola
+
+String terdiri dari:
+46 4c 41 47 7b 48 45 58 ...
+
+Karakter yang digunakan hanya:
+
+0-9
+A-F
+
+Ciri tersebut menunjukkan kemungkinan besar data menggunakan Hexadecimal (Base16).
+
+Langkah 2: Pisahkan Per Byte
+
+Dalam Hex:
+
+46 4c 41 47 7b 48 45 58 5f 49 53 5f 45 41 53 59 7d
+
+Setiap 2 digit Hex = 1 byte ASCII.
+
+Langkah 3: Konversi Hex → ASCII
+Hex	ASCII
+46	F
+4C	L
+41	A
+47	G
+7B	{
+48	H
+45	E
+58	X
+5F	_
+49	I
+53	S
+5F	_
+45	E
+41	A
+53	S
+59	Y
+7D	}
+
+Hasil:
+FLAG{HEX_IS_EASY}
+
+Flag:
+FLAG{HEX_IS_EASY}
+
+-----------------------------------------------------------------------
+
+Script Encode Hex (python)
+text = input("Masukan teks: ")
+
+hasil = text.encode().hex()
+
+print("Hex:")
+print(hasil)
+
+Contoh:
+Input: HELLO
+Output: 48454c4c4f
+-----------------------------------------------------------------------
+
+Script Decode Hex(python)
+
+hex_string = input("Masukan Hex: ")
+
+plaintext = bytes.fromhex(hex_string).decode()
+
+print("Plaintext:")
+print(plaintext)
+
+Contoh:
+Input: 48454c4c4f
+Output: HELLO
+-----------------------------------------------------------------------

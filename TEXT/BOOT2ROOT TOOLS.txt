@@ -1,0 +1,20 @@
+TOOLKIT BOOT2ROOT
+
+sudo apt update
+
+sudo apt install \
+gdb \
+binwalk \
+wireshark \
+steghide \
+exiftool \
+ffuf \
+gobuster \
+curl \
+git \
+python3-pip
+
+pip install pwntools
+pip install volatility3
+pip install pycryptodome
+pip install gmpy2

@@ -1,0 +1,17 @@
+x1= 209331740
+x2= 1582196960
+x3= 652312891
+x4= 422396675
+
+d1 = x1-x2
+d2 = x2-x3
+d3 = x3-x4
+
+t0 = d2*d2 - d1*d3
+from sympy import factorint
+m = 2147483647
+a = (d2*pow(d1,-1,m)) %m
+c = (x2-a*x1)%m
+print("m =", m)
+print("a =", a)
+print("c =", c) 
